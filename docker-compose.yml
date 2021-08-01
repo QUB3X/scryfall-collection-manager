@@ -1,0 +1,14 @@
+version: "3"
+services:
+   db:
+      image: apache/couchdb
+      container_name: "mtg-couchdb"
+      ports:
+         - 5984:5984
+      volumes:
+         - mtg_db:/opt/couchdb/data
+      environment:
+         - COUCHDB_USER=admin
+         - COUCHDB_PASSWORD=password
+volumes:
+   mtg_db: {}

@@ -1,0 +1,10 @@
+@import "../styles/variables";
+
+.scm--container {
+	background-color: $color-bg;
+
+	border-bottom: 1px dashed #cdcdcd;
+	border-bottom-width: 1px;
+	border-bottom-style: dashed;
+	border-bottom-color: rgb(205, 205, 205);
+}
