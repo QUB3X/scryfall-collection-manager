@@ -23,12 +23,16 @@ async function CardPageSetup() {
 	container.setAttribute("class", "toolbox scm--container")
 	container.setAttribute("id", "scm--collection-mgr")
 
-	let cardData = await GetCardData()
+	let cardId = GetCardId()
 
 	if (mainDiv) {
 		mainDiv.prepend(container)
 		ReactDOM.render(
-			<CardWidget cardData={cardData} />,
+			cardId ? (
+				<CardWidget cardId={cardId} />
+			) : (
+				<p>Error: Card Id not found!</p>
+			),
 			document.getElementById("scm--collection-mgr")
 		)
 	} else {
@@ -36,19 +40,9 @@ async function CardPageSetup() {
 	}
 }
 
-async function GetCardData() {
+function GetCardId() {
 	let cardId = document
 		.querySelector("meta[name='scryfall:card:id']")
 		?.getAttribute("content")
-
-	let apiUrl = `https://api.scryfall.com/cards/${cardId}?format=json`
-
-	try {
-		let res = await fetch(apiUrl, {
-			method: "GET",
-		})
-		return await res.json()
-	} catch (err) {
-		console.error(err)
-	}
+	return cardId
 }

@@ -1,6 +1,6 @@
 {
 	"manifest_version": 2,
-	"name": "Sample WebExtension",
+	"name": "MTG Collection Manager for Scryfall.com",
 	"version": "0.0.0",
 
 	"icons": {
@@ -9,18 +9,20 @@
 		"48": "assets/icons/favicon-48.png",
 		"128": "assets/icons/favicon-128.png"
 	},
-	"description": "Sample description",
-	"homepage_url": "https://github.com/abhijithvijayan/web-extension-starter",
-	"short_name": "Sample Name",
+	"description": "A simple collection manager for Magic The Gathering that seamlessly integrates in Scryfall.com",
+	"homepage_url": "https://github.com/qub3x/scryfall-collection-manager",
+	"short_name": "MTG Collection Manager",
 
 	"permissions": [
 		"activeTab",
 		"storage",
-		"http://scryfall.com/*",
-		"https://scryfall.com/*"
+		"http://*.scryfall.com/*",
+		"https://*.scryfall.com/*",
+		"http://localhost/*",
+		"https://localhost/*"
 	],
 
-	"content_security_policy": "script-src 'self'; object-src 'self'",
+	"content_security_policy": "script-src 'self' *.scryfall.com; object-src 'self' *.scryfall.com",
 
 	"__chrome|firefox__author": "abhijithvijayan",
 	"__opera__developer": {
@@ -37,7 +39,6 @@
 	"__opera__minimum_opera_version": "36",
 
 	"browser_action": {
-		"default_popup": "popup.html",
 		"default_icon": {
 			"16": "assets/icons/favicon-16.png",
 			"32": "assets/icons/favicon-32.png",

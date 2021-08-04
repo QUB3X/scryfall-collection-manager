@@ -1,7 +1,6 @@
 import { Msg } from "../Defs/messages"
 import { browser } from "webextension-polyfill-ts"
 import PouchDB from "pouchdb"
-
 const collectionName = "collection0"
 
 // const DB_USER = "admin"
@@ -23,9 +22,11 @@ browser.runtime.onMessage.addListener(async (msg: Msg) => {
 			break
 		case "SET_CARD":
 			console.log("Setting card...")
+			// TODO: ADD SET CARD FEATURE
 			break
 		case "REMOVE_CARD":
 			console.log("Removing card...")
+			RemoveCard(msg.payload)
 			break
 		case "SYNC":
 			console.log("Syncing collection...")
@@ -41,12 +42,12 @@ browser.runtime.onMessage.addListener(async (msg: Msg) => {
 
 export {}
 
-interface Card {
+export interface Card {
 	name: string
 	_id: string
 	lang: string
-	quantityNonFoil: string
-	quantityFoil: string
+	quantityNonFoil: number
+	quantityFoil: number
 }
 
 interface Query {
@@ -88,15 +89,44 @@ async function AddCard(data: any) {
 	UpdateCollection()
 }
 
+async function RemoveCard(data: any) {
+	var query: Query
+	try {
+		query = await db.get(collectionName)
+	} catch (error) {
+		return
+	}
+	let idx = query.cards.findIndex((card) => card._id == data.id)
+	if (idx >= 0) {
+		let card = query.cards[idx]
+		if (data.isFoil) {
+			if (card.quantityFoil > 0) card.quantityFoil -= data.quantity
+		} else {
+			if (card.quantityNonFoil > 0) card.quantityNonFoil -= data.quantity
+		}
+		if (card.quantityFoil <= 0 && card.quantityNonFoil <= 0) {
+			query.cards.splice(idx, 1)
+		} else {
+			query.cards[idx] = card
+		}
+	} else return
+	await db.put(query)
+	UpdateCollection()
+}
+
+function SendMessageToContentScript(msg: Msg) {
+	browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+		browser.tabs.sendMessage(tabs[0].id!, msg)
+	})
+}
+
 async function UpdateCollection() {
 	let cards = await GetCards()
 	let msg: Msg = {
 		type: "COLLECTION_UPDATE",
 		payload: cards,
 	}
-	browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-		browser.tabs.sendMessage(tabs[0].id!, msg)
-	})
+	SendMessageToContentScript(msg)
 }
 
 async function GetCards(): Promise<Card[]> {
